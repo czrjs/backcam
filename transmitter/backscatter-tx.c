@@ -77,13 +77,20 @@ static const uint8_t u8aRadiotapHeader[] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // timestamp (leave blank for auto)
     0x10, // flags
     0x02, // datarate
-    0xa8, 0x09, // channel, 0x76 0x09 for channel 3; 0xa8 0x09 for channel 13
+    0x76, 0x09, // channel, 0x76 0x09 for channel 3; 0xa8 0x09 for channel 13
     0x00, 0x00,
     //0x80, 0x04, // channel flags
     0x08, 0x00
 };
 
-int main(void) {
+int main(int argc, char *argv[]) {
+
+    if (argc != 2) {
+        printf("ERROR: Please provde an interface set in monitor mode for injection.\n");
+        printf("Usage: ./inject <inject_iface>\n");
+        return 2;
+    }
+    char *iface = argv[1];
 
     /* PCAP vars */
     char errbuf[PCAP_ERRBUF_SIZE];
@@ -92,10 +99,10 @@ int main(void) {
     /**
      * First, we open the interface we want to inject on using pcap.
      */
-    ppcap = pcap_open_live("wlan1mon", 800, 1, 20, errbuf);
+    ppcap = pcap_open_live(iface, 800, 1, 20, errbuf);
 
     if (ppcap == NULL) {
-        printf("Could not open interface mon0 for packet injection: %s", errbuf);
+        printf("Could not open interface %s for packet injection: %s", iface, errbuf);
         return 2;
     }
 
